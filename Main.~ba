@@ -1,0 +1,8 @@
+; PROJECT : Project2
+; AUTHOR  : awesomewaif0009@xboxlivefamily.com
+; CREATED : 3/11/2014
+; EDITED  : 3/13/2014
+; ---------------------------------------------------------------------
+
+ OpenScreen 800,600,16,2
+ 	
