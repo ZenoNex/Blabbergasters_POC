@@ -5,15 +5,20 @@
 ; ---------------------------------------------------------------------
 #Include "Input" 
  OpenScreen 800,600,16,2
- 	Do
+ Do
  		;this starts the start screen
  		LoadImage "blabbergaster.png",1
 			DrawImage 1,0,0,0
  				Text 350,500,"Press Space Key"
  		sync
  			;this is the controls for the start screen
- 				If SpaceKey()
-    	
-    			Endif	  
- 			
- 	loop
+ 				If SpaceKey()=1   
+;second screen label
+Label1: 					    				
+					Cls 1
+    					Text 350,500,"you cleared the screen"
+    						sync
+    						waitkey
+    				Goto Label1
+    			Endif		
+loop
