@@ -1,19 +1,59 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 3/14/2014
+; EDITED  : 3/19/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
  OpenScreen 800,600,16,2
- 	Do
- 		;this starts the start screen
- 		LoadImage "blabbergaster.png",1
+ ;load images
+ LoadImage "blabbergaster.png",1
+ LoadImage "options.png",2
+ LoadImage "character.png",3
+ ;-1-
+ 	;load varibles
+ 	x# = 200
+ 	y# = 200
+ 	walkspeed# = 1.5
+ 	;-2-
+ 		;set the Frames per second
+ 		SetFPS 40 
+ 		;-3-
+ Do
+ 		;this start inital screen
+ 		
 			DrawImage 1,0,0,0
- 				Text 350,500,"Press Space Key"
+ 				Text 290,460,"Press Space Key to go to options"
+ 					Text 290,470,"Press the E to start the game"
  		sync
+ 		;-4-
  			;this is the controls for the start screen
- 				If SpaceKey()
-    	
-    			Endif	  
- 			
- 	loop
+ 					
+ 					If Scancode()=18
+						Do
+							Cls 1
+									;Character controlls
+									If LeftKey() then x# = x# - walkspeed# 
+    								If RightKey()then x# = x# + walkspeed#   	
+    								If UpKey() Then y# = y# - walkspeed# 
+    								If DownKey() Then y# = y# + walkspeed# 
+    								If EscKey()=1 then end 	
+								DrawImage 3,x#,y#,1
+									sync
+    								waitkey
+ 						Loop	
+ 					Endif
+ 					If SpaceKey()=1   
+				    		Do			
+								Cls 1
+									DrawImage 2,0,0,0
+    									Text 100,150,"This Is the options screen."
+    									Text 100,158,"You can make customizations to the game here"
+							
+							
+						
+    							sync
+    							waitkey
+    							If EscKey()=1 then end 	
+    						Loop
+    				Endif		
+loop
