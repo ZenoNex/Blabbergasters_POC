@@ -1,7 +1,7 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 3/19/2014
+; EDITED  : 3/21/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
  OpenScreen 800,600,16,2
@@ -13,25 +13,43 @@
  	;load varibles
  	x# = 200
  	y# = 200
- 	walkspeed# = 1.5
+ 	walkspeed# = 2.5
  	;-2-
  		;set the Frames per second
  		SetFPS 40 
  		;-3-
  Do
  		;this start inital screen
- 		
+Label1:		
 			DrawImage 1,0,0,0
  				Text 290,460,"Press Space Key to go to options"
  					Text 290,470,"Press the E to start the game"
+ 						If MouseX()=160
+ 							Text 165,275,"The B is dangerous"
+ 							If Scancode()=18
+								Do
+									Cls 1
+										;Character controlls 
+									
+										If LeftKey() then x# = x# - walkspeed# 
+    									If RightKey()then x# = x# + walkspeed#   	
+    									If UpKey() Then y# = y# - walkspeed# 
+    									If DownKey() Then y# = y# + walkspeed# 
+    									If EscKey()=1 then end 	
+										DrawImage 3,x#,y#,1
+									sync
+    								waitkey
+ 							Loop	
+ 						Endif
+ 					Endif
  		sync
  		;-4-
- 			;this is the controls for the start screen
- 					
+ 			
  					If Scancode()=18
 						Do
 							Cls 1
-									;Character controlls
+									;Character controlls 
+									
 									If LeftKey() then x# = x# - walkspeed# 
     								If RightKey()then x# = x# + walkspeed#   	
     								If UpKey() Then y# = y# - walkspeed# 

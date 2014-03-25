@@ -1,60 +1,93 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 3/20/2014
+; EDITED  : 3/25/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
  OpenScreen 800,600,16,2
  ;load images
  LoadImage "blabbergaster.png",1
  LoadImage "options.png",2
- LoadImage "character.png",3
+ LoadImage "options_text_welcome.png",3
+ LoadImage "character.png",4
+ LoadImage "first level.png",5
  ;-1-
  	;load varibles
+ 	StartScreen# = 0
  	x# = 200
  	y# = 200
- 	walkspeed# = 1.5
+ 	walkspeed# = 2.5
  	;-2-
  		;set the Frames per second
  		SetFPS 40 
  		;-3-
  Do
  		;this start inital screen
- 		
+Label1:		
+				StartScreen# = 1
 			DrawImage 1,0,0,0
  				Text 290,460,"Press Space Key to go to options"
  					Text 290,470,"Press the E to start the game"
+ 						If MouseX()=160
+ 							Text 165,275,"The B is dangerous"
+ 							If Scancode()=18
+ 									StartScreen# = 0
+								Do
+									Cls 1
+										;Character controlls 
+									
+										If LeftKey() then x# = x# - walkspeed# 
+    									If RightKey()then x# = x# + walkspeed#   	
+    									If UpKey() Then y# = y# - walkspeed# 
+    									If DownKey() Then y# = y# + walkspeed# 
+    									If EscKey()=1 then end 	
+										DrawImage 4,x#,y#,1
+									sync
+    								waitkey
+ 							Loop	
+ 						Endif
+ 					Endif
  		sync
  		;-4-
- 			;this is the controls for the start screen
- 					
+ 			
  					If Scancode()=18
+ 							StartScreen# = 0
 						Do
 							Cls 1
 									;Character controlls 
-									
+								DrawImage 5,0,0,0
+										If Scancode()=16 and StartScreen# = 0
+    										Goto Label1
+    									endif
 									If LeftKey() then x# = x# - walkspeed# 
     								If RightKey()then x# = x# + walkspeed#   	
     								If UpKey() Then y# = y# - walkspeed# 
-    								If DownKey() Then y# = y# + walkspeed# 
+    								If DownKey() Then y# = y# + walkspeed#
+    								 ;boundry system
+    								 if y# < 1 Then y# = y# + 1 
+    									if x# < 1 Then x# = x# + 1 
+    										if x# > 770 Then x# = x# - 1
+    											if y# > 590 Then y# = y# - 1 
     								If EscKey()=1 then end 	
-								DrawImage 3,x#,y#,1
+								DrawImage 4,x#,y#,1
 									sync
     								waitkey
  						Loop	
  					Endif
- 					If SpaceKey()=1   
+ 					If SpaceKey()=1
+ 								StartScreen# = 0   
 				    		Do			
 								Cls 1
 									DrawImage 2,0,0,0
-    									Text 100,150,"This Is the options screen."
-    									Text 100,158,"You can make customizations to the game here"
+    									DrawImage 3,228,99,1
 							
 							
 						
     							sync
     							waitkey
-    							If EscKey()=1 then end 	
+    							If Scancode()=16 and StartScreen# = 0
+    								Goto Label1
+    							endif 	
     						Loop
     				Endif		
 loop
