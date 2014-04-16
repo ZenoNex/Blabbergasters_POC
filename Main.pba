@@ -1,7 +1,7 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 4/15/2014
+; EDITED  : 4/16/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
 
@@ -21,12 +21,15 @@
   	Sh=GetScreenHeight()
   	SetingsFile$ = "Mydata.dat"
  	StartScreen# = 0
- 	character = 6
- 	x# = 200
- 	y# = 200
- 	walkspeed# = 2.5
  	
- 	globalFps = 40
+ 	If FileExist(SetingsFile$)=0
+ 		character = 6
+ 		x# = 200
+ 		y# = 200
+ 		walkspeed# = 2.5
+ 		globalFps = 40
+ 		Playername$ = "username"
+ 	endif
  	;load files
  	
  	If FileExist(SetingsFile$)
@@ -36,6 +39,7 @@
     y#					=Val#(ReadString$(1))
     walkspeed#			=Val#(ReadString$(1))
     globalFps			=Val (ReadString$(1))
+    Playername$      =    (ReadString$(1))
   CloseFile 1
 Endif
  	
@@ -47,27 +51,17 @@ Label1:
   WriteString 1,Str$(y#)
   WriteString 1,Str$(walkspeed#)
   WriteString 1,Str$(globalFps)
+  WriteString 1,Playername$
 CloseFile 1
  Endif
 
-
-;setting up a positionable input
-	;Positionable input 1
-		; load the arial font as font #2, size 22
-  			LoadFont "arial",2,20,0
-  
-  			MyInput     =NewInput(20,250,_
-  			"Example Async Input (Get Input While Your Game Updates)")
-  				sync
-  			
- 	 			 Inputfont MyInput,2
  	 			 
  	;Positionable input 1
  		; load the arial font as font #2, size 22
   			LoadFont "arial",2,22,0
   
   			playername     =NewInput(135,256,_
-  			"Example Async Input (Get Input While Your Game Updates)")
+  			Playername$)
   				sync
   			
  	 			 Inputfont playername,2
@@ -126,12 +120,14 @@ Label3:
   											WriteString 1,Str$(x#)
   											WriteString 1,Str$(y#)
 									   	WriteString 1,Str$(walkspeed#)
-									   	 WriteString 1,Str$(globalFps)
+									   	WriteString 1,Str$(globalFps)
+									   	WriteString 1,Playername$
 									 		end
  									 	Endif 
     								Endif	
     								
 								DrawImage character,x#,y#,1
+									Text x#+3 , y#-10, Playername$
 									sync
     								waitkey
  					  	Loop	
@@ -219,7 +215,20 @@ Label2:
   												
   													Goto Label2
   														WaitKey
-  								Loop	
+  														
+  										If EscKey()=1 
+    										If FileExist(SetingsFile$)=1
+ 												WriteFile SetingsFile$,1
+ 												WriteString 1,Str$(character)
+  												WriteString 1,Str$(x#)
+  												WriteString 1,Str$(y#)
+									   		WriteString 1,Str$(walkspeed#)
+									   		WriteString 1,Str$(globalFps)
+									   		WriteString 1,Playername$
+									 			end
+ 									 		Endif 
+    									Endif
+  									Loop	
 				
     							 Endif	
 									sync
