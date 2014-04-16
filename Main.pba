@@ -1,7 +1,7 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 4/11/2014
+; EDITED  : 4/15/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
 
@@ -81,44 +81,21 @@ CloseFile 1
  Do
  
  		;this start inital screen
+Label3: 		
   				StartScreen# = 1
+  				cls 0
+			
+		  				
 			DrawImage 1,0,0,0
-		
+						sync
  				Text 290,460,"Press Space Key to go to options"
  					Text 290,470,"Press the E to start the game"
  						sync
-     
-     				If Scancode()=20
-     					Do
-     						Repeat
-   					; Call the Input Poll function to update
-   					; and draw this input message
-    						 Input(MyInput)
-     
-   					; refresh the display so the user can see it
-    						 Sync
-     						DrawImage 1,0,0,0
-		
- 				Text 290,460,"Press Space Key to go to options"
- 					Text 290,470,"Press the E to start the game"
-     
-  					   ; Loop until the user hits Enter!
-  							Until GetInputActive(MyInput)=false
+     						WaitKey
+  							
+					
+  	
   
-						; wait until no keys are being pressed
-  							WaitNoKey
-  
-
-  
-						; Display what the user typed
-  							Print GetInputText(MyInput)
-  						; Refresh the screen and wait for a key to be pressed
-  							Sync
-  							WaitKey
-  						Loop	
-					Endif	
-  	Sync
-  	WaitKey
    
  			
 
@@ -197,11 +174,12 @@ Label2:
     							If LeftMouseButton()=true and MouseX()>135 and MouseX()<419 and MouseY()>246 and MouseY()<294
     								
      								Do
+     									Playername$ = GetInputText(playername)
      									If GetInputActive(playername)=false
      										Deleteinput playername
      										sync
      											playername     =NewInput(135,256,_
-  												"Example Async Input (Get Input While Your Game Updates)")
+  												Playername$)
   												sync
   			
  	 			 								Inputfont playername,2
@@ -214,6 +192,8 @@ Label2:
      
    											; refresh the display so the user can see it
     												 Sync
+     						
+     											Playername$ = GetInputText(playername)
      						
      										DrawImage 2,0,0,0
     									DrawImage 3,228,75,1
@@ -244,10 +224,11 @@ Label2:
     							 Endif	
 									sync
 									;input "Q" to go to main menue 
-    							  If Scancode()=16 and StartScreen# = 0
-    									Goto Label1
+    							  If Scancode()=16 
+    									Goto Label3
     							  endif 	
     						Loop
     				Endif		
 		
+ 						
 loop

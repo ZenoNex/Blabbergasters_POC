@@ -1,0 +1,750 @@
+; PROJECT : Project2
+; AUTHOR  : awesomewaif0009@xboxlivefamily.com
+; CREATED : 3/11/2014
+; EDITED  : 4/15/2014
+; ---------------------------------------------------------------------
+; #Include "Input" 
+; PROJECT : Input Library
+; EDITED  : 2/04/2006
+; ---------------------------------------------------------------------
+ 
+
+#IFNDEF InputLibrary_Version
+
+; *=-------------------------------------------------------------------=*
+;               >>  PLAY BASIC INPUT LIBRARY EXTENSION <<
+;     (c) copyright 2005/2008 Underware Design. All Rights Reserved
+; *=-------------------------------------------------------------------=*
+ 
+  Constant InputLibrary_Version	=0003
+  Constant Inputibrary_Debug		=False
+
+
+	#IF PlayBasicVersion<163
+			#Abort "Input Extension Library Requires at least Play Basic V1.63 or higher!"
+	#ENDIF
+
+
+; Manage PB's Debug/Trace mode, so pb won't trace through these functions	
+	#IF PBDebug=True
+		 #IF PBDebugMode=2
+			 Constant InputLIbrary_PreviousTraceState=PBTraceState  
+		 	#Trace Off
+		 #ENDIF
+	#ENDIF
+
+
+
+	Type tPBInput
+		Exist				; 
+		AcceptingInput	; has this routine been close (has enter been hit)
+		Complete
+		Xpos,Ypos
+		CurDraw
+		CurTimer
+		CurPos
+		Prompt$
+		Text$
+	   SelStart, SelLength
+		SelColor				
+		TextColor
+		Font	
+		MaxLength
+		KeyStates(255)		
+	EndType
+
+	Dim PB_Input(16) As tPBinput
+
+
+
+
+; F:GetFreeInput() : InputIndex
+Psub GetFreeInput()
+	index=GetFreeCell(PB_input())
+EndPsub Index
+
+
+; F:GetInputQuantity() : NumberOfInputIndexs
+Psub GetInputQuantity()
+		Size=GetArrayElements(PB_input().tPBinput,1)	
+EndPsub Size
+
+
+; F:GetInputStatus(InputIndex) : StatusFlag
+Function GetInputStatus(ThisInput)
+		If ThisInput>0 And ThisInput=<GetArrayElements(PB_input().tPBinput,1)	
+			result=PB_Input(thisINput).Exist			
+		EndIf	
+EndFunction Result
+
+
+; F:InputLength(InputIndex,MaxLength):
+Psub InputLength(ThisInput,MaxLength)
+	If GetInputStatus(ThisInput)
+			PB_Input(ThisInput).MaxLength=ClipRange(MaxLength,1,1024)
+	EndIf	
+EndPsub
+
+
+; F:GetInputLength(InputIndex) : Length
+Psub GetInputLength(ThisInput)
+	If GetInputStatus(ThisInput)
+			size=PB_Input(ThisInput).MaxLength
+	EndIf	
+EndPsub Size
+
+
+
+; F:InputActive(InputIndex,State) :
+Psub InputActive(ThisInput,Flag)
+	If GetInputStatus(ThisInput)
+			PB_Input(ThisInput).AcceptingInput=Flag &1
+	EndIf	
+EndPsub
+
+
+; F:GetInputActive(InputIndex) : State
+Psub GetInputActive(ThisInput)
+	If GetInputStatus(ThisInput)
+			Result=PB_Input(ThisInput).AcceptingInput
+	EndIf	
+EndPsub Result
+
+
+
+; F:InputText(InputIndex,text$) : 
+Psub InputText(ThisInput,TExt$)
+		If GetInputStatus(ThisInput)
+			PB_input(Thisinput).Text$		= Text$
+			PB_Input(ThisInput).CurDraw 	= 0
+			PB_input(Thisinput).Curpos		= Len(TExt$)
+			PB_Input(ThisInput).CurTimer  = 0
+			PB_INput(ThisInput).SelStart  = 0
+			PB_INput(ThisInput).SelLength = 0
+		EndIf	
+EndPsub 
+
+
+; F:GetInputText(InputIndex) : Text$ 
+Psub GetInputText(ThisInput)
+		If GetInputStatus(ThisInput)
+				s$=PB_Input(thisINput).text$
+		else
+				s$=""
+		EndIf	
+EndPsub s$
+
+
+
+; F:InputKeyState(InputIndex,KeyScanCode,State) : 
+Psub InputKeyState(ThisInput,KeyScanCode,State)
+		If GetInputStatus(ThisInput)
+			if keyScanCOde>-1 and KeyScanCode<256
+				PB_Input(thisINput).KeyStates(KeyScanCode) = State & 1
+			endif
+		EndIf	
+EndPsub 
+
+; F:InputKeyState(InputIndex,KeyScanCode) :  State
+Psub GetInputKeyState(ThisInput,KeyScanCode)
+		If GetInputStatus(ThisInput)
+			if keyScanCOde>-1 and KeyScanCode<256
+				state=PB_Input(thisINput).KeyStates(KeyScanCode)
+			endif
+		EndIf	
+EndPsub state
+
+
+
+
+; F:InputFont(InputIndex,ThisFont) : 
+Psub InputFont(ThisInput,ThisFont)
+		If GetInputStatus(ThisInput) and GetFontStatus(ThisFont)
+				PB_Input(thisINput).Font = ThisFont
+		EndIf	
+EndPsub 
+
+; F:GetInputFont(InputIndex) : ,ThisFont
+Psub GetInputFont(ThisInput)
+		If GetInputStatus(ThisInput)
+				ThisFont=PB_Input(thisINput).Font
+		EndIf	
+EndPsub ThisFont
+
+
+
+
+; F:InputColours(InputIndex,TextColour,SelectColour) :
+Psub InputColours(ThisInput,TextColour,SelectColour)
+		If GetInputStatus(ThisInput)
+				PB_Input(thisINput).TextColor = TextColour
+				PB_Input(thisINput).SelColor = SelectColour
+		EndIf	
+EndPsub 
+
+
+; F:GetInputColours(InputIndex) : TextColour,SelectColour
+Psub GetInputColours(ThisInput)
+		If GetInputStatus(ThisInput)
+				ThisColour=PB_Input(thisINput).TextColor
+				SelectColour=PB_Input(thisINput).SelColor
+		EndIf	
+EndPsub ThisColour,SelectCOlour
+
+
+
+
+; F:PositionInput(InputIndex,Xpos,Ypos) 
+Psub PositionInput(ThisInput,Xpos,Ypos)
+	If GetInputStatus(ThisInput)
+			PB_Input(ThisInput).Xpos=Xpos
+			PB_Input(ThisInput).Ypos=Ypos
+	EndIf	
+EndPsub
+
+
+
+; F:GetInputPosition(InputIndex) : Xpos,Ypos 
+Psub GetInputPosition(ThisInput)
+	If GetInputStatus(ThisInput)
+			Xpos=PB_Input(ThisInput).Xpos
+			Ypos=PB_Input(ThisInput).Ypos
+	EndIf	
+EndPsub xpos,ypos
+
+
+
+; F:NewInput(Xpos,Ypos,StartingText$) :
+Function NewInput(Xpos,Ypos,Text$)
+	ThisInput=GetFreeInput()
+		If ThisInput>0
+			PB_input(Thisinput).Exist				= True
+			PB_input(Thisinput).AcceptingInput	= True	; Set It to Poll input
+			PositionInput ThisInput,xpos,ypos
+			InputText(ThisInput,TExt$)
+			InputLength(ThisInput,1024)
+			PB_INput(ThisInput).SelColor	= RGB(0, 0, 255)
+			PB_Input(ThisInput).TextColor	= RGB(255,255,255)
+			Pb_Input(ThisInput).Font		= GetCurrentFont()
+
+			For lp=0 to 255
+				PB_input(Thisinput).Keystates(lp)=true
+			next
+			
+		EndIf
+EndFunction ThisInput
+
+
+
+
+; F:DeleteInput(InputIndex) :
+Psub DeleteInput(ThisInput)
+		If GetInputStatus(ThisInput)
+			Pb_input(ThisInput)=Null
+		EndIf
+EndPsub
+
+
+
+; F:Input(InputIndex) : Status
+Function Input(ThisInput)
+
+	If GetInputStatus(ThisInput)
+
+		Local OldColor 	= GetInk()
+
+
+		Status		=PB_input(ThisInput).AcceptingInput
+		Curpos		=PB_Input(ThisInput).Curpos
+		Text$			=PB_Input(ThisInput).text$
+		SelStart		=PB_Input(ThisInput).SelStart
+		SelLength	=PB_Input(ThisInput).SelLength
+		Xpos			=PB_input(Thisinput).Xpos
+		Ypos			=PB_input(Thisinput).Ypos
+
+		oldFont=GetCurrentFont()
+
+		SetFont 	Pb_Input(ThisInput).Font
+
+		; check is this input is currently active
+	   If Status=False Then Goto OutputSection
+
+
+		If PB_Input(ThisInput).CurTimer < Timer()
+		   PB_Input(ThisInput).CurTimer = Timer() + 300
+	  		PB_Input(ThisInput).CurDraw = PB_Input(ThisInput).CurDraw Xor 1
+		EndIf
+
+		Local Char$ = Inkey$()
+		Local SCode = ScanCode()
+
+		
+		if PB_input(Thisinput).KeyStates(Scode and 255)=false
+			Scode =false
+			char$=""
+		endif		
+
+		Local Shift 
+		if PB_input(Thisinput).KeyStates(42) or PB_input(Thisinput).KeyStates(54)
+				local ShiftMask
+				ShiftMask=(1*PB_input(Thisinput).KeyStates(42))+(2*PB_input(Thisinput).KeyStates(54))	
+				shift= ShiftKeys(ShiftMask)
+		endif
+		
+		SCode = SCode And 255
+		If Asc(Char$) = -1 Then Goto OutputSection
+		Local Ascii = Asc(Char$)
+
+	Select SCode
+	 Case 203; Right Arrow
+		  If CurPos > 0
+			   Dec CurPos
+			   If Shift Then Dec SelLength
+		  EndIf
+ 
+	 Case 205; Left Arrow
+	  		If CurPos < Len(Text$)
+			   Inc CurPos
+			   If Shift Then Inc SelLength
+		  EndIf
+ 
+	 Case 211; Delete
+	 	 If SelLength = 0 Then Text$ = _InputEx_Delete(Text$, CurPos + 1, CurPos + 1)
+	 	 If SelLength > 0
+	 	  Text$ = _InputEx_Delete(Text$, SelStart + 1, SelStart + SelLength)
+	 	  SelLength = 0
+	 	  CurPos = SelStart
+	 	 EndIf
+	 	 If SelLength < 0
+	 	  Text$ = _InputEx_Delete(Text$, SelStart + SelLength + 1, SelStart)
+	 	  StartSel = CurPos
+	 	  SelLength = 0
+	 	 EndIf
+ 
+ 	Case 14; BackSpace
+ 		 If SelLength = 0
+ 		  If CurPos > 0 Then Dec CurPos
+ 		  Text$ = _InputEx_Delete(Text$, CurPos + 1, CurPos + 1)
+ 		 EndIf
+	 	 If SelLength > 0      
+	 	  Text$ = _InputEx_Delete(Text$, SelStart + 1, SelStart + SelLength)
+	 	  SelLength = 0
+	 	  CurPos = SelStart
+	 	 EndIf
+	 	 If SelLength < 0
+	 	  Text$ = _InputEx_Delete(Text$, SelStart + SelLength + 1, SelStart)
+	 	  StartSel = CurPos
+	 	  SelLength = 0
+ 		 EndIf  
+ 
+	 Case 207; End  
+	  		CurPos = Len(Text$)
+		  If Shift Then SelLength = Len(Text$) - SelStart
+ 
+	 Case 199; Home
+		  CurPos = 0
+		  If Shift Then SelLength = 0 - SelStart
+ 	
+	 Default; other key
+		If Len(text$)<PB_input(ThisInput).maxlength
+	 	 If Ascii >= 32 And Scode < 155 And Scode > 0
+		   Inc CurPos
+		    Text$ = Insert$(Text$, Char$, CurPos - 1)
+		   If SelLength > 0
+		    Text$ = _InputEx_Delete(Text$, SelStart + 1, SelStart + SelLength)
+		    CurPos = SelStart + 1
+		    SelLength = 0	
+		   EndIf
+		   If SelLength < 0
+		    Text$ = _InputEx_Delete(Text$, SelStart + SelLength+2, SelStart+1)
+		    CurPos = SelStart+SelLength+1
+		    SelLength = 0
+		   EndIf	
+		  EndIf
+		EndIf
+		  SelStart = CurPos
+	
+		  If ASCII = 13 Then Status = False
+  	EndSelect
+
+		If Shift = 0
+		 SelLength = 0
+		 SelStart = CurPos
+		EndIf
+
+		PB_Input(ThisInput).CurTimer = Timer() + 300
+		PB_Input(ThisInput).CurDraw = 1
+
+OutputSection:
+
+
+		If status
+			Local CurOffset 	= GetTextWidth(CutRight$(Text$, CurPos + 1))
+			Local TextHeight 	= GetTextHeight("Y")
+			Local SelStartX 	= GetTextWidth(CutRight$(Text$, SelStart + 1))
+			Local SelLengthX 	= GetTextWidth(CutRight$(Text$, SelStart + SelLength + 1))
+			BoxC SelStartX + XPos, YPos, SelLengthX + XPos, YPos + TextHeight, 1, PB_Input(ThisInput).SelColor
+		EndIf
+
+		Ink PB_Input(ThisInput).TextColor
+		Text Xpos, YPos, Text$
+		If status
+			If SelLength > 0
+				 Local NonSel1$ = Left$(Text$, SelStart)
+				 Local SelPart$ = Mid$(Text$, Len(NonSel1$)+1, SelLength)
+				 Local NonSel2$ = Right$(Text$, Len(Text$) - SelStart - SelLength)
+
+				Ink PB_Input(ThisInput).TextColor
+
+				 Text XPos, YPos, NonSel1$
+				 Text XPos + GetTextWidth(NonSel1$ + SelPart$), YPos, NonSel2$
+				 Ink RGBFade(PB_Input(ThisInput).SelColor,50)
+				 Text XPos + GetTextWidth(NonSel1$), YPos, SelPart$
+			EndIf
+			If SelLength < 0
+				 Local NonSel1$ = Left$(Text$, SelStart + SelLength)
+				 Local SelPart$ = Mid$(Text$, Len(NonSel1$)+1, Abs(SelLength))
+				 Local NonSel2$ = Right$(Text$, Len(Text$) - SelStart)
+				 Ink oldcolor
+
+				Ink PB_Input(ThisInput).TextColor
+				 Text XPos, YPos, NonSel1$
+	 			Text XPos + GetTextWidth(NonSel1$ + SelPart$), YPos, NonSel2$
+
+				 Ink RGBFade(PB_Input(ThisInput).SelColor,50)
+				 Text XPos + GetTextWidth(NonSel1$), YPos, SelPart$
+
+;				Ink PB_Input(ThisInput).TextColor
+			EndIf
+
+			  If PB_Input(ThisInput).CurDraw =1 Then Line XPos + CurOffset, Ypos, XPos + CurOffset, Ypos + TextHeight
+		EndIf
+	
+		PB_Input(ThisInput).CurPos				=CurPos
+		PB_Input(ThisInput).text$				=Text$
+		PB_Input(ThisInput).SelStart			=SelStart
+		PB_Input(ThisInput).SelLength			=SelLength
+		PB_input(ThisInput).AcceptingInput	=Status
+
+		SetFont oldfont
+		Ink OldColor
+	EndIf
+EndFunction Status
+
+
+
+
+; F:StaticInput(Prompt$) : Text$
+Function StaticInput(Prompt$)
+	CurrentFpsLimit=GetFps()
+	Setfps 60
+
+	ThisFont=getcurrentFont()	
+	ThisSurface=GetSurface()
+	xpos=getcursorx()
+	ypos=getcursory()
+	text xpos,ypos,Prompt$
+	Xpos=xpos+GetTextWidth(Prompt$)
+	
+	width=getSurfacewidth()
+	Height=getsurfaceheight()
+	BackBuffer=Newimage(width,height)
+	Getimage BackBuffer,0,0,width,Height		 	
+	
+   MyInput	=NewInput(xpos,ypos,"")
+
+	InputFont MyInput,ThisFont
+	
+	c=getink()
+	
+; Set the colour of this Input prompt
+	 InputColours(MyInput, C,c)
+	 
+	 InputLength MyInput,255
+
+		repeat
+			Drawimage BackBuffer,0,0,0
+		
+			if GetScreenFocus()=false and GetScreentype()=1
+				wait 100
+			endif
+				
+			; Call the Input Prompt to update and draw the input message
+			Input(MyInput)
+
+			Sync
+		until GetInputActive(MyInput)=False
+
+	rendertoimage backbuffer
+	result$=GetInputText(MyInput)
+	print prompt$+result$	
+
+	rendertoimage ThisSurface
+	drawimage BackBuffer,0,0,0
+	deleteimage BackBuffer
+	Setfps CurrentFpsLimit
+
+endfunction Result$	
+  
+
+
+
+
+
+Psub _InputEx_Delete(Text$, RightCut, LeftCut)
+	Local LeftPart$ = CutRight$(Text$, RightCut)
+	Local RightPart$ = CutLeft$(Text$, LeftCut)
+	Local Result$ = LeftPart$ + RightPart$
+EndPsub Result$
+
+
+
+
+
+
+	#IF PBDebug=True
+		 #IF PBDebugMode=2
+			 #Trace InputLibrary_PreviousTraceState
+		 #ENDIF
+	#ENDIF
+
+
+#ENDIF
+
+
+ OpenScreen 800,600,16,2
+ ;load images
+ LoadImage "blabbergaster.png",1
+ LoadImage "options.png",2
+ LoadImage "options_text_welcome.png",3
+ LoadImage "first level.png",4
+ LoadImage "character.png",5
+ LoadImage "character_V2.png",6
+ LoadImage "options_Button_smoothCharacter.png",16
+ LoadImage "options_Button_roughCharacter.png",17
+ 
+ 	;load varibles with default values
+ 	Sw=GetScreenWidth()
+  	Sh=GetScreenHeight()
+  	SetingsFile$ = "Mydata.dat"
+ 	StartScreen# = 0
+ 	
+ 	If FileExist(SetingsFile$)=0
+ 		character = 6
+ 		x# = 200
+ 		y# = 200
+ 		walkspeed# = 2.5
+ 		globalFps = 40
+ 		Playername$ = "username"
+ 	endif
+ 	;load files
+ 	
+ 	If FileExist(SetingsFile$)
+  ReadFile SetingsFile$,1
+    character			=Val (ReadString$(1))
+    x# 					=Val#(ReadString$(1))
+    y#					=Val#(ReadString$(1))
+    walkspeed#			=Val#(ReadString$(1))
+    globalFps			=Val (ReadString$(1))
+    Playername$      =    (ReadString$(1))
+  CloseFile 1
+Endif
+ 	
+Label1:
+ If FileExist(SetingsFile$)=0
+ 	WriteFile SetingsFile$,1
+  WriteString 1,Str$(character)
+  WriteString 1,Str$(x#)
+  WriteString 1,Str$(y#)
+  WriteString 1,Str$(walkspeed#)
+  WriteString 1,Str$(globalFps)
+  WriteString 1,Playername$
+CloseFile 1
+ Endif
+
+ 	 			 
+ 	;Positionable input 1
+ 		; load the arial font as font #2, size 22
+  			LoadFont "arial",2,22,0
+  
+  			playername     =NewInput(135,256,_
+  			Playername$)
+  				sync
+  			
+ 	 			 Inputfont playername,2
+  
+
+ 	
+ 	
+ 		;set the Frames per second
+ 		SetFPS globalfps 
+ 		;-3-
+ Do
+ 
+ 		;this start inital screen
+Label3: 		
+  				StartScreen# = 1
+  				cls 0
+			
+		  				
+			DrawImage 1,0,0,0
+						sync
+ 				Text 290,460,"Press Space Key to go to options"
+ 					Text 290,470,"Press the E to start the game"
+ 						sync
+     						WaitKey
+  							
+					
+  	
+  
+   
+ 			
+
+ 					If Scancode()=18
+ 							StartScreen# = 0
+						Do
+							Cls 1
+									;Character controlls 
+								DrawImage 4,0,0,0
+									
+										If Scancode()=16 and StartScreen# = 0
+    										Goto Label1
+    									endif
+									If Scancode()=30 then x# = x# - walkspeed# 
+    								If scancode()=32 then x# = x# + walkspeed#   	
+    								If Scancode()=17 Then y# = y# - walkspeed# 
+    								If Scancode()=31 Then y# = y# + walkspeed#
+    								 ;boundry system
+    								 if y# < 1 Then y# = y# + 3 
+    									if x# < 1 Then x# = x# + 3
+    										if x# + 35 > 770 Then x# = x# - 3
+    											if y# + 73 > 590 Then y# = y# - 3
+    														
+    								If EscKey()=1 
+    									If FileExist(SetingsFile$)=1
+ 											WriteFile SetingsFile$,1
+ 											WriteString 1,Str$(character)
+  											WriteString 1,Str$(x#)
+  											WriteString 1,Str$(y#)
+									   	WriteString 1,Str$(walkspeed#)
+									   	WriteString 1,Str$(globalFps)
+									   	WriteString 1,Playername$
+									 		end
+ 									 	Endif 
+    								Endif	
+    								
+								DrawImage character,x#,y#,1
+									Text x#+3 , y#-10, Playername$
+									sync
+    								waitkey
+ 					  	Loop	
+ 					Endif
+ 					If SpaceKey()=1
+ 								StartScreen# = 0 
+Label2: 								  
+				    		Do			
+								Cls 1
+										;draw the options screen allong with a floating text
+									DrawImage 2,0,0,0
+    									DrawImage 3,228,75,1
+    										If smoothCharacterButton=1 or character = 5
+    											roughCharacterButton=0
+    											DrawImage 16,0,0,1
+    										Endif
+    											
+    									If roughCharacterButton=1 or character = 6
+    										smoothCharacterButton=0
+    										DrawImage 17,0,0,1
+    									Endif
+    										Text 138, 248, GetInputText(playername)
+    										sync
+    								;button inputs
+    							If LeftMouseButton()=true and MouseX()>112 and MouseX()<284 and MouseY()>174 and MouseY()<199 
+        							Print "player has been changed"
+        							character = 5
+        							roughCharacterButton=0
+        							smoothCharacterButton=1
+    							 EndIf
+									sync
+    								;second button input
+    							If LeftMouseButton()=true and MouseX()>297 and MouseX()<452 and MouseY()>174 and MouseY()<199 
+        							Print "player has been changed"
+        							character = 6
+        							roughCharacterButton=1
+        							smoothCharacterButton=0
+    							 EndIf
+    							 	;player text input activate
+    							If LeftMouseButton()=true and MouseX()>135 and MouseX()<419 and MouseY()>246 and MouseY()<294
+    								
+     								Do
+     									Playername$ = GetInputText(playername)
+     									If GetInputActive(playername)=false
+     										Deleteinput playername
+     										sync
+     											playername     =NewInput(135,256,_
+  												Playername$)
+  												sync
+  			
+ 	 			 								Inputfont playername,2
+  
+     										endif 
+     									Repeat
+   											; Call the Input Poll function to update
+   											; and draw this input message
+    						 						Input(playername)
+     
+   											; refresh the display so the user can see it
+    												 Sync
+     						
+     											Playername$ = GetInputText(playername)
+     						
+     										DrawImage 2,0,0,0
+    									DrawImage 3,228,75,1
+    										If smoothCharacterButton=1 or character = 5
+    											roughCharacterButton=0
+    											DrawImage 16,0,0,1
+    										Endif
+    											
+    									If roughCharacterButton=1 or character = 6
+    										smoothCharacterButton=0
+    										DrawImage 17,0,0,1
+    									Endif
+     						
+  					   						; Loop until the user hits Enter!
+  										Until GetInputActive(playername)=false
+												; Display what the user typed
+  													Text 138, 248, GetInputText(playername)
+  												; Refresh the screen and wait for a key to be pressed
+  												
+  												; wait until no keys are being pressed
+  													WaitNoKey
+  														sync
+  												
+  													Goto Label2
+  														WaitKey
+  														
+  										If EscKey()=1 
+    										If FileExist(SetingsFile$)=1
+ 												WriteFile SetingsFile$,1
+ 												WriteString 1,Str$(character)
+  												WriteString 1,Str$(x#)
+  												WriteString 1,Str$(y#)
+									   		WriteString 1,Str$(walkspeed#)
+									   		WriteString 1,Str$(globalFps)
+									   		WriteString 1,Playername$
+									 			end
+ 									 		Endif 
+    									Endif
+  									Loop	
+				
+    							 Endif	
+									sync
+									;input "Q" to go to main menue 
+    							  If Scancode()=16 
+    									Goto Label3
+    							  endif 	
+    						Loop
+    				Endif		
+		
+ 						
+loop
