@@ -1,7 +1,7 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 4/11/2014
+; EDITED  : 4/22/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
 
@@ -21,12 +21,15 @@
   	Sh=GetScreenHeight()
   	SetingsFile$ = "Mydata.dat"
  	StartScreen# = 0
- 	character = 6
- 	x# = 200
- 	y# = 200
- 	walkspeed# = 2.5
  	
- 	globalFps = 40
+ 	If FileExist(SetingsFile$)=0
+ 		character = 6
+ 		x# = 200
+ 		y# = 200
+ 		walkspeed# = 2.5
+ 		globalFps = 40
+ 		Playername$ = "username"
+ 	endif
  	;load files
  	
  	If FileExist(SetingsFile$)
@@ -36,6 +39,7 @@
     y#					=Val#(ReadString$(1))
     walkspeed#			=Val#(ReadString$(1))
     globalFps			=Val (ReadString$(1))
+    Playername$      =    (ReadString$(1))
   CloseFile 1
 Endif
  	
@@ -47,27 +51,17 @@ Label1:
   WriteString 1,Str$(y#)
   WriteString 1,Str$(walkspeed#)
   WriteString 1,Str$(globalFps)
+  WriteString 1,Playername$
 CloseFile 1
  Endif
 
-
-;setting up a positionable input
-	;Positionable input 1
-		; load the arial font as font #2, size 22
-  			LoadFont "arial",2,20,0
-  
-  			MyInput     =NewInput(20,250,_
-  			"Example Async Input (Get Input While Your Game Updates)")
-  				sync
-  			
- 	 			 Inputfont MyInput,2
  	 			 
  	;Positionable input 1
  		; load the arial font as font #2, size 22
   			LoadFont "arial",2,22,0
   
   			playername     =NewInput(135,256,_
-  			"Example Async Input (Get Input While Your Game Updates)")
+  			Playername$)
   				sync
   			
  	 			 Inputfont playername,2
@@ -81,61 +75,76 @@ CloseFile 1
  Do
  
  		;this start inital screen
+Label3: 		
   				StartScreen# = 1
+  				cls 0
+			
+		  				
 			DrawImage 1,0,0,0
-		
+						sync
  				Text 290,460,"Press Space Key to go to options"
  					Text 290,470,"Press the E to start the game"
  						sync
-     
-     				If Scancode()=20
-     					Do
-     						Repeat
-   					; Call the Input Poll function to update
-   					; and draw this input message
-    						 Input(MyInput)
-     
-   					; refresh the display so the user can see it
-    						 Sync
-     						DrawImage 1,0,0,0
-		
- 				Text 290,460,"Press Space Key to go to options"
- 					Text 290,470,"Press the E to start the game"
-     
-  					   ; Loop until the user hits Enter!
-  							Until GetInputActive(MyInput)=false
+     						WaitKey
+  							
+					
+  	
   
-						; wait until no keys are being pressed
-  							WaitNoKey
-  
-
-  
-						; Display what the user typed
-  							Print GetInputText(MyInput)
-  						; Refresh the screen and wait for a key to be pressed
-  							Sync
-  							WaitKey
-  						Loop	
-					Endif	
-  	Sync
-  	WaitKey
    
  			
 
  					If Scancode()=18
  							StartScreen# = 0
+Label4:
 						Do
 							Cls 1
 									;Character controlls 
 								DrawImage 4,0,0,0
-									
+								
+										If LeftMouseButton()=true
+												MouseMovementX = MouseX()
+											   MouseMovementY = MouseY()
+											repeat
+												If MouseMovementX > x# then x# = x# + walkspeed#
+													If MouseMovementX < x# then x# = x# - walkspeed#
+													sync
+												
+												If MouseMovementY > y# then y# = y# + walkspeed#
+												 	If MouseMovementY < Y# then Y# = Y# - walkspeed#
+												 	sync
+												 		cls 1
+												 		DrawImage 4,0,0,0
+												 		DrawImage character,x#,y#,1
+												 		
+												 		If Scancode()=30 
+    										  			 Goto Label5
+    													endif
+    													If scancode()=32 
+    														Goto Label5
+    													endif   	
+    													If Scancode()=17 
+    														Goto Label5
+    													endif 
+    													If Scancode()=31 
+												 			Goto Label5
+    													endif
+												 		
+											until x# = MouseMovementX and y# = MouseMovementY
+											cls 0
+											sync
+												goto label4	
+											endif
+								
+Label5:
 										If Scancode()=16 and StartScreen# = 0
     										Goto Label1
     									endif
+    								If Scancode()=17 then y# = y# - walkspeed#
+       							If Scancode()=31 then y# = y# + walkspeed# 
+    										    									
 									If Scancode()=30 then x# = x# - walkspeed# 
-    								If scancode()=32 then x# = x# + walkspeed#   	
-    								If Scancode()=17 Then y# = y# - walkspeed# 
-    								If Scancode()=31 Then y# = y# + walkspeed#
+    								If scancode()=32 then x# = x# + walkspeed#  	
+    							
     								 ;boundry system
     								 if y# < 1 Then y# = y# + 3 
     									if x# < 1 Then x# = x# + 3
@@ -149,14 +158,16 @@ CloseFile 1
   											WriteString 1,Str$(x#)
   											WriteString 1,Str$(y#)
 									   	WriteString 1,Str$(walkspeed#)
-									   	 WriteString 1,Str$(globalFps)
+									   	WriteString 1,Str$(globalFps)
+									   	WriteString 1,Playername$
 									 		end
  									 	Endif 
     								Endif	
     								
 								DrawImage character,x#,y#,1
+									Text x#+3 , y#-10, Playername$
 									sync
-    								waitkey
+    								
  					  	Loop	
  					Endif
  					If SpaceKey()=1
@@ -197,11 +208,12 @@ Label2:
     							If LeftMouseButton()=true and MouseX()>135 and MouseX()<419 and MouseY()>246 and MouseY()<294
     								
      								Do
+     									Playername$ = GetInputText(playername)
      									If GetInputActive(playername)=false
      										Deleteinput playername
      										sync
      											playername     =NewInput(135,256,_
-  												"Example Async Input (Get Input While Your Game Updates)")
+  												Playername$)
   												sync
   			
  	 			 								Inputfont playername,2
@@ -214,6 +226,8 @@ Label2:
      
    											; refresh the display so the user can see it
     												 Sync
+     						
+     											Playername$ = GetInputText(playername)
      						
      										DrawImage 2,0,0,0
     									DrawImage 3,228,75,1
@@ -239,15 +253,29 @@ Label2:
   												
   													Goto Label2
   														WaitKey
-  								Loop	
+  														
+  										If EscKey()=1 
+    										If FileExist(SetingsFile$)=1
+ 												WriteFile SetingsFile$,1
+ 												WriteString 1,Str$(character)
+  												WriteString 1,Str$(x#)
+  												WriteString 1,Str$(y#)
+									   		WriteString 1,Str$(walkspeed#)
+									   		WriteString 1,Str$(globalFps)
+									   		WriteString 1,Playername$
+									 			end
+ 									 		Endif 
+    									Endif
+  									Loop	
 				
     							 Endif	
 									sync
 									;input "Q" to go to main menue 
-    							  If Scancode()=16 and StartScreen# = 0
-    									Goto Label1
+    							  If Scancode()=16 
+    									Goto Label3
     							  endif 	
     						Loop
     				Endif		
 		
+ 						
 loop
