@@ -1,7 +1,7 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 4/22/2014
+; EDITED  : 4/25/2014
 ; ---------------------------------------------------------------------
 #Include "Input" 
 
@@ -55,6 +55,15 @@ Label1:
 CloseFile 1
  Endif
 
+; turn windows mouse pointer off
+ Mouse 0
+
+; Create shape
+		
+	CreateConvexShape 1,10,4
+	CreateConvexShape 2,5,5
+	MergeShape 2,1
+	DeleteShape 2
  	 			 
  	;Positionable input 1
  		; load the arial font as font #2, size 22
@@ -81,18 +90,19 @@ Label3:
 			
 		  				
 			DrawImage 1,0,0,0
-						sync
+						
  				Text 290,460,"Press Space Key to go to options"
  					Text 290,470,"Press the E to start the game"
- 						sync
-     						WaitKey
+ 						
+     						Ink RGB(0,255,0)
+	 	RotateShape 1,angle#,1
+		DrawShape 1,MouseX(),MouseY(),2 
+		
+		angle#=WrapAngle(angle#,1)
+			Ink RGB(500,500,500)
+			sync
   							
-					
-  	
-  
-   
- 			
-
+  							
  					If Scancode()=18
  							StartScreen# = 0
 Label4:

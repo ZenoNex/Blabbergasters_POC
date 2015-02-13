@@ -1,7 +1,7 @@
 ; PROJECT : Project2
 ; AUTHOR  : awesomewaif0009@xboxlivefamily.com
 ; CREATED : 3/11/2014
-; EDITED  : 4/25/2014
+; EDITED  : 2/13/2015
 ; ---------------------------------------------------------------------
 #Include "Input" 
 
@@ -56,7 +56,7 @@ CloseFile 1
  Endif
 
 ; turn windows mouse pointer off
- Mouse 0
+
 
 ; Create shape
 		
@@ -183,7 +183,7 @@ Label5:
  					If SpaceKey()=1
  								StartScreen# = 0 
 Label2: 								  
-				    		Do			
+				    		Do	 		
 								Cls 1
 										;draw the options screen allong with a floating text
 									DrawImage 2,0,0,0
@@ -216,7 +216,7 @@ Label2:
     							 EndIf
     							 	;player text input activate
     							If LeftMouseButton()=true and MouseX()>135 and MouseX()<419 and MouseY()>246 and MouseY()<294
-    								
+    								DrawShape 1,MouseX(),MouseY(),2
      								Do
      									Playername$ = GetInputText(playername)
      									If GetInputActive(playername)=false
@@ -283,7 +283,9 @@ Label2:
 									;input "Q" to go to main menue 
     							  If Scancode()=16 
     									Goto Label3
-    							  endif 	
+    							  endif
+    							  
+    							   	
     						Loop
     				Endif		
 		
